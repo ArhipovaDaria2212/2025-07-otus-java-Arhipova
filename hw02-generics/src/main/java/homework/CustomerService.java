@@ -1,9 +1,13 @@
 package homework;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 
 public class CustomerService {
-    private final TreeMap<Customer, String> customers;
+    private final NavigableMap<Customer, String> customers;
 
     public CustomerService() {
         customers = new TreeMap<>(Comparator.comparingLong(Customer::getScores));
@@ -23,7 +27,9 @@ public class CustomerService {
     }
 
     private Map.Entry<Customer, String> copyEntry(Map.Entry<Customer, String> entry) {
-        if (entry == null) return null;
+        if (entry == null) {
+            return null;
+        }
 
         Customer key = entry.getKey();
         Customer keyCopy = new Customer(key.getId(), key.getName(), key.getScores());
