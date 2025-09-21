@@ -1,5 +1,8 @@
 package ru.arhipova.agent;
 
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.Instrumentation;
+import java.security.ProtectionDomain;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.objectweb.asm.AnnotationVisitor;
@@ -10,10 +13,6 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.AdviceAdapter;
-
-import java.lang.instrument.ClassFileTransformer;
-import java.lang.instrument.Instrumentation;
-import java.security.ProtectionDomain;
 
 @UtilityClass
 @SuppressWarnings("java:S1172")
