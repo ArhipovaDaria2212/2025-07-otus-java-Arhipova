@@ -8,6 +8,7 @@ include("hw05-aop")
 include("hw06-atm")
 include("hw07-patterns")
 include("hw08-json")
+include("hw13-di")
 
 pluginManagement {
     val jgitver: String by settings
