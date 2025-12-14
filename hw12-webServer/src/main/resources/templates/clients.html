@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Пользователи</title>
+    <script>
+        function addPhone() {
+            const div = document.getElementById("phones");
+            const input = document.createElement("input");
+            input.type = "text";
+            input.className = "phone";
+            input.placeholder = "Телефон";
+            div.appendChild(document.createElement("br"));
+            div.appendChild(input);
+        }
+
+        function createClient() {
+            const name = document.getElementById("name").value;
+            const street = document.getElementById("street").value;
+            const login = document.getElementById("login").value;
+            const password = document.getElementById("password").value;
+            const role = document.getElementById("role").value;
+
+            const phones = Array.from(document.querySelectorAll(".phone"))
+                .map(p => p.value)
+                .filter(v => v.trim() !== "");
+
+            const payload = {
+                name: name,
+                login: login,
+                password: password,
+                role: role,
+                address: {
+                    street: street
+                },
+                phones: phones.map(p => ({ number: p }))
+            };
+
+            fetch("/api/client", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            }).then(() => loadClients());
+        }
+
+        function loadClients() {
+            fetch("/api/client", {
+                method: "GET",
+                headers: { "Content-Type": "application/json" }
+            })
+                .then(r => r.json())
+                .then(clients => {
+                    const tbody = document.getElementById("clientsTableBody");
+                    tbody.innerHTML = "";
+
+                    clients.forEach(client => {
+                        const tr = document.createElement("tr");
+
+                        tr.innerHTML =
+                            "<td>" + client.id + "</td>" +
+                            "<td>" + client.name + "</td>" +
+                            "<td>" + client.address.street + "</td>" +
+                            "<td>" + client.phones.map(p => p.number).join(", ") + "</td>";
+
+                        tbody.appendChild(tr);
+                    });
+                })
+                .catch(data => {
+                    document.getElementById("clientDataContainer").textContent = data;});
+        }
+
+        loadClients();
+    </script>
+</head>
+<body>
+    <h3>Создать нового клиента</h3>
+
+    <form id="clientForm">
+        <label for="name">Имя клиента:</label>
+        <input type="text" id="name" placeholder="Введите имя клиента"><br>
+
+        <label for="login">Логин клиента:</label>
+        <input type="text" id="login" placeholder="Введите логин клиента"><br>
+
+        <label for="password">Пароль клиента:</label>
+        <input type="text" id="password" placeholder="Введите пароль клиента"><br>
+
+        <label for="role">Выберите роль:</label>
+        <select id="role" name="role">
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+        </select><br>
+
+        <label for="street">Улица:</label>
+        <input type="text" id="street" placeholder="Введите улицу">
+
+        <p>Телефоны:</p>
+        <div id="phones">
+            <input type="text" class="phone" placeholder="Введите телефон"><br>
+        </div>
+        <button type="button" onclick="addPhone()">Добавить телефон</button><br><br>
+
+        <button type="button" onclick="createClient()">Создать</button>
+    </form>
+
+    <pre id="clientDataContainer"></pre>
+    <hr>
+
+    <h3>Список клиентов</h3>
+
+    <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Имя</th>
+            <th>Улица</th>
+            <th>Телефоны</th>
+        </tr>
+        </thead>
+        <tbody id="clientsTableBody">
+        </tbody>
+    </table>
+</body>
+</html>
