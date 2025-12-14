@@ -15,3 +15,4 @@
 - **hw10-jpql** - ДЗ №10, Hibernate
 - **hw11-cache** - ДЗ №11, Свой cache engine
 - **hw12-webServer** - ДЗ №12, веб сервер
+- **hw13-di** - ДЗ №13, IoC контейнер
