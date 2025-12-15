@@ -9,6 +9,7 @@ include("hw06-atm")
 include("hw07-patterns")
 include("hw08-json")
 include("hw12-webServer")
+include("hw14-springDataJdbc")
 
 pluginManagement {
     val jgitver: String by settings

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Клиенты</title>
+
+    <script>
+        function addPhone(value = "") {
+            const phonesDiv = document.getElementById("phones");
+
+            const input = document.createElement("input");
+            input.type = "text";
+            input.className = "phone";
+            input.placeholder = "Введите телефон";
+            input.value = value;
+
+            phonesDiv.appendChild(input);
+            phonesDiv.appendChild(document.createElement("br"));
+        }
+
+        function preparePhonesBeforeSubmit() {
+            const phones = document.querySelectorAll(".phone");
+
+            phones.forEach((input, index) => {
+                input.name = `phones[${index}].number`;
+            });
+        }
+    </script>
+</head>
+<body>
+
+<h3>Создать нового клиента</h3>
+
+<form method="post"
+      th:action="@{/}"
+      th:object="${client}"
+      onsubmit="preparePhonesBeforeSubmit()">
+
+    <label>Имя:</label>
+    <input type="text" th:field="*{name}">
+    <br>
+
+    <label>Логин:</label>
+    <input type="text" th:field="*{login}">
+    <br>
+
+    <label>Пароль:</label>
+    <input type="password" th:field="*{password}">
+    <br>
+
+    <label>Роль:</label>
+    <select th:field="*{role}">
+        <option value="USER">User</option>
+        <option value="ADMIN">Admin</option>
+    </select>
+    <br>
+
+    <label>Улица:</label>
+    <input type="text" th:field="*{address.street}">
+    <br>
+
+    <p>Телефоны:</p>
+    <div id="phones">
+        <!-- пусто изначально -->
+    </div>
+
+    <button type="button" onclick="addPhone()">Добавить телефон</button>
+    <br><br>
+
+    <button type="submit">Создать</button>
+</form>
+
+<hr>
+
+<h3>Список клиентов</h3>
+
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Имя</th>
+        <th>Улица</th>
+        <th>Телефоны</th>
+    </tr>
+
+    <tr th:each="c : ${clients}">
+        <td th:text="${c.id}"></td>
+        <td th:text="${c.name}"></td>
+        <td th:text="${c.address.street}"></td>
+        <td th:text="${#strings.listJoin(c.phones.![number], ', ')}"></td>
+    </tr>
+</table>
+
+</body>
+</html>

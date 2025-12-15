@@ -12,3 +12,4 @@
 - **hw07-patterns** - ДЗ №7, практика в паттернах GOF
 - **hw08-json** - ДЗ №8, обработчик json-ов
 - **hw12-webServer** - ДЗ №12, веб сервер
+- **hw14-springDataJdbc** - ДЗ №14, веб-приложение на Spring Boot
