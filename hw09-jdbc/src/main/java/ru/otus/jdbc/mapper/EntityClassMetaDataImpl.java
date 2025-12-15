@@ -1,10 +1,11 @@
 package ru.otus.jdbc.mapper;
 
+import lombok.SneakyThrows;
+import ru.otus.jdbc.mapper.annotation.Id;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.List;
-import lombok.SneakyThrows;
-import ru.otus.jdbc.mapper.annotation.Id;
 
 public class EntityClassMetaDataImpl<T> implements EntityClassMetaData<T> {
     private final Class<T> clazz;
@@ -18,10 +19,17 @@ public class EntityClassMetaDataImpl<T> implements EntityClassMetaData<T> {
         this.clazz = clazz;
         this.constructor = clazz.getDeclaredConstructor();
         this.allFields = List.of(clazz.getDeclaredFields());
-        this.idField = allFields.stream()
+        List<Field> idFields = allFields.stream()
                 .filter(field -> field.isAnnotationPresent(Id.class))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("No @Id field found in class " + clazz.getName()));
+                .toList();
+        if (idFields.isEmpty()) {
+            throw new IllegalStateException("No @Id field found in class " + clazz.getName());
+        }
+        if (idFields.size() > 1) {
+            throw new IllegalStateException("Too many @Id field found in class " + clazz.getName());
+        }
+
+        this.idField = idFields.getFirst();
         this.fieldsWithoutId =
                 allFields.stream().filter(field -> !field.equals(idField)).toList();
     }
