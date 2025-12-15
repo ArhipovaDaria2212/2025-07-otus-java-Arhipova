@@ -15,3 +15,4 @@
 - **hw10-jpql** - ДЗ №10, Hibernate
 - **hw11-cache** - ДЗ №11, Свой cache engine
 - **hw12-webServer** - ДЗ №12, веб сервер
+- **hw14-springDataJdbc** - ДЗ №14, веб-приложение на Spring Boot
