@@ -1,0 +1,57 @@
+package ru.otus.crm.model;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@Entity
+@Builder
+@NoArgsConstructor
+@Table(name = "phone")
+public class Phone implements Cloneable {
+    @Id
+    @SequenceGenerator(name = "phone_gen", sequenceName = "phone_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "phone_gen")
+    @Column(name = "id")
+    private Long id;
+
+    @Column(name = "number")
+    private String number;
+
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH})
+    @JoinColumn(name = "client_id")
+    private Client client;
+
+    public Phone(Long id, String number) {
+        this.id = id;
+        this.number = number;
+    }
+
+    public Phone(Long id, String number, Client client) {
+        this.id = id;
+        this.number = number;
+        this.client = client;
+    }
+
+    @Override
+    public Phone clone() {
+        return Phone.builder()
+                .id(this.id)
+                .number(this.number)
+                .client(this.client)
+                .build();
+    }
+}
