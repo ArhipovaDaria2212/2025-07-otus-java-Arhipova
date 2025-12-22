@@ -16,7 +16,7 @@ import lombok.Setter;
 @Entity
 @NoArgsConstructor
 @Table(name = "address")
-public class Address {
+public class Address implements Cloneable {
     @Id
     @SequenceGenerator(name = "address_gen", sequenceName = "address_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "address_gen")
@@ -29,5 +29,10 @@ public class Address {
     public Address(Long id, String street) {
         this.id = id;
         this.street = street;
+    }
+
+    @Override
+    public Address clone() {
+        return new Address(this.id, this.street);
     }
 }

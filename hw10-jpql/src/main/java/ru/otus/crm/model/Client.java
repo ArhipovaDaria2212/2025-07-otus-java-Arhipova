@@ -56,10 +56,12 @@ public class Client implements Cloneable {
     public Client(Long id, String name, Address address, List<Phone> phones) {
         this.id = id;
         this.name = name;
-        this.address = address;
+        this.address = address.clone();
         if (phones != null) {
-            this.phones = phones;
-            phones.forEach(phone -> phone.setClient(this));
+            this.phones = phones.stream()
+                    .map(Phone::clone)
+                    .peek(phone -> phone.setClient(this))
+                    .toList();
         }
     }
 

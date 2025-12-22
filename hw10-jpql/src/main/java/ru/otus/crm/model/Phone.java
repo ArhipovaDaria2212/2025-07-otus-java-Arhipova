@@ -10,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,9 +18,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
+@Builder
 @NoArgsConstructor
 @Table(name = "phone")
-public class Phone {
+public class Phone implements Cloneable {
     @Id
     @SequenceGenerator(name = "phone_gen", sequenceName = "phone_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "phone_gen")
@@ -42,5 +44,14 @@ public class Phone {
         this.id = id;
         this.number = number;
         this.client = client;
+    }
+
+    @Override
+    public Phone clone() {
+        return Phone.builder()
+                .id(this.id)
+                .number(this.number)
+                .client(this.client)
+                .build();
     }
 }
