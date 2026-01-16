@@ -57,11 +57,8 @@ public class DbServiceDemo {
     private static List<Long> saveClients(DbServiceClientImpl dbServiceClient) {
         List<Long> ids = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            Long id = dbServiceClient.saveClient(
-                            new Client("dbService" + i,
-                                    new Address("Street"),
-                                    List.of(new Phone("88005553535"))
-                            ))
+            Long id = dbServiceClient
+                    .saveClient(new Client("dbService" + i, new Address("Street"), List.of(new Phone("88005553535"))))
                     .getId();
             ids.add(id);
         }
@@ -71,9 +68,9 @@ public class DbServiceDemo {
 
     private static void getClients(List<Long> ids, DbServiceClientImpl dbServiceClient) {
         for (int i = 0; i < 5; i++) {
-            ids.forEach(id ->
-                    dbServiceClient.getClient(id).orElseThrow(() -> new RuntimeException("Client not found, id:" + id))
-            );
+            ids.forEach(id -> dbServiceClient
+                    .getClient(id)
+                    .orElseThrow(() -> new RuntimeException("Client not found, id:" + id)));
         }
     }
 
@@ -86,18 +83,15 @@ public class DbServiceDemo {
 
         new MigrationsExecutorFlyway(dbUrl, dbUserName, dbPassword).executeMigrations();
 
-        var sessionFactory = HibernateUtils.buildSessionFactory(configuration, Client.class, Address.class, Phone.class);
+        var sessionFactory =
+                HibernateUtils.buildSessionFactory(configuration, Client.class, Address.class, Phone.class);
 
         var transactionManager = new TransactionManagerHibernate(sessionFactory);
         var clientTemplate = new DataTemplateHibernate<>(Client.class);
 
         if (needCache) {
-            Listener<String, Client> listener = new Listener<String, Client>() {
-                @Override
-                public void notify(String key, Client value, String action) {
-                    log.info("key:{}, value:{}, action: {}", key, value.toString(), action);
-                }
-            };
+            Listener<String, Client> listener =
+                    (key, value, action) -> log.info("key:{}, value:{}, action: {}", key, value, action);
             var cache = new CacheImpl<String, Client>();
             cache.addListener(listener);
             return new DbServiceClientImpl(transactionManager, clientTemplate, cache);

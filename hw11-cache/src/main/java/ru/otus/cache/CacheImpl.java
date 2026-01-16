@@ -3,7 +3,9 @@ package ru.otus.cache;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.WeakHashMap;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class CacheImpl<K, V> implements Cache<K, V> {
     private final WeakHashMap<K, V> cache;
     private final List<Listener<K, V>> listeners;
@@ -16,20 +18,20 @@ public class CacheImpl<K, V> implements Cache<K, V> {
     @Override
     public void put(K key, V value) {
         Action action = cache.put(key, value) == null ? Action.CREATE : Action.EDIT;
-        listeners.forEach(listener -> listener.notify(key, value, String.valueOf(action)));
+        notifyAll(key, value, action);
     }
 
     @Override
     public void remove(K key) {
         V value = cache.remove(key);
-        listeners.forEach(listener -> listener.notify(key, value, String.valueOf(Action.REMOVE)));
+        notifyAll(key, value, Action.REMOVE);
     }
 
     @Override
     public V get(K key) {
         V value = cache.get(key);
         if (value != null) {
-            listeners.forEach(listener -> listener.notify(key, value, String.valueOf(Action.GET)));
+            notifyAll(key, value, Action.GET);
         }
         return value;
     }
@@ -49,5 +51,15 @@ public class CacheImpl<K, V> implements Cache<K, V> {
         EDIT,
         REMOVE,
         GET;
+    }
+
+    private void notifyAll(K key, V value, Action action) {
+        listeners.forEach(listener -> {
+            try {
+                listener.notify(key, value, String.valueOf(action));
+            } catch (Exception e) {
+                log.error("Exception was thrown while notify listener: {}", e.getMessage());
+            }
+        });
     }
 }
