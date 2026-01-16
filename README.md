@@ -13,4 +13,5 @@
 - **hw08-json** - ДЗ №8, обработчик json-ов
 - **hw09-jdbc** - ДЗ №9, cамодельный ORM
 - **hw10-jpql** - ДЗ №10, Hibernate
+- **hw11-cache** - ДЗ №11, Свой cache engine
 - **hw12-webServer** - ДЗ №12, веб сервер
