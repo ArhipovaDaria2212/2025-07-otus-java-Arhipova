@@ -6,6 +6,7 @@ import ru.otus.appcontainer.api.AppComponentsContainer;
 import ru.otus.appcontainer.api.AppComponentsContainerConfig;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,14 +40,16 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
                 .forEach(method -> {
                     try {
                         method.setAccessible(true);
-                        Parameter[] parameters = method.getParameters();
-                        String componentName =
-                                method.getAnnotation(AppComponent.class).name();
-                        Object component;
 
+                        Object component;
+                        String componentName = getComponentName(method);
+
+
+                        Parameter[] parameters = method.getParameters();
                         Object[] args = Arrays.stream(parameters)
                                 .map(parameter -> getAppComponent(parameter.getType()))
                                 .toArray();
+
                         component = method.invoke(instance, args);
 
                         appComponents.add(component);
@@ -56,12 +59,6 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
                                 String.format("Failed to parse the configuration file %s", configClass.getName()), e);
                     }
                 });
-    }
-
-    private void checkConfigClass(Class<?> configClass) {
-        if (!configClass.isAnnotationPresent(AppComponentsContainerConfig.class)) {
-            throw new IllegalArgumentException(String.format("Given class is not config %s", configClass.getName()));
-        }
     }
 
     @Override
@@ -90,5 +87,21 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
         }
 
         return (C) component;
+    }
+
+    private String getComponentName(Method method) {
+        String componentName = method.getAnnotation(AppComponent.class).name();
+
+        if (appComponentsByName.containsKey(componentName)) {
+            throw new RuntimeException(String.format("Couldn't add %s component, duplicate name", componentName));
+        }
+
+        return componentName;
+    }
+
+    private void checkConfigClass(Class<?> configClass) {
+        if (!configClass.isAnnotationPresent(AppComponentsContainerConfig.class)) {
+            throw new IllegalArgumentException(String.format("Given class is not config %s", configClass.getName()));
+        }
     }
 }
